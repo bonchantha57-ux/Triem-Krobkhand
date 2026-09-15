@@ -29,7 +29,38 @@
   <!-- Google Identity Services (GIS) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
-  <script type="module" crossorigin src="./assets/index-D6fJTWJw.js"></script>
+  
+  <!-- Immediate Anti-Inspect & Right-Click Blocker -->
+  <script>
+    (function() {
+      // Disable Right Click
+      document.addEventListener('contextmenu', function(e) {
+        var tag = e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '';
+        if (tag !== 'input' && tag !== 'textarea') {
+          e.preventDefault();
+          return false;
+        }
+      }, true);
+
+      // Disable Shortcut Keys (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+      window.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || e.keyCode === 123) {
+          e.preventDefault();
+          return false;
+        }
+        var isCtrlOrCmd = e.ctrlKey || e.metaKey;
+        if (isCtrlOrCmd && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c', 'K', 'k'].indexOf(e.key) !== -1) {
+          e.preventDefault();
+          return false;
+        }
+        if (isCtrlOrCmd && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) {
+          e.preventDefault();
+          return false;
+        }
+      }, true);
+    })();
+  </script>
+  <script type="module" crossorigin src="./assets/index-lKFnc2zb.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-Bdu68TBd.css">
 </head>
 <body class="theme-light font-medium">
