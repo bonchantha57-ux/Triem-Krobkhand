@@ -3,6 +3,7 @@ import { StorageService } from '../services/storage.js';
 import { CloudflareService } from '../services/cloudflareApi.js';
 import { getIcon } from '../utils/icons.js';
 import { compressImageFile } from '../utils/imageCompressor.js';
+import { parseFirebaseConfigInput } from '../utils/firebaseParser.js';
 
 export function renderAdminView(container, showToast, refreshApp) {
   let activeTab = 'exams'; // 'exams', 'questions', 'cloudflare'
@@ -1007,36 +1008,73 @@ ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIME
         </div>
 
         <!-- Firebase & Google Auth Setup Card in Cloudflare D1 -->
-        <div class="admin-form-card" style="margin-bottom: 1.5rem; border-left: 4px solid #4285F4;">
+        <div class="admin-form-card" style="margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
             <div>
               <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
                 <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
-                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                  <path fill="#FFCA28" d="M3.89 15.672L6.255.461A.542.542 0 0 1 7.27.284l3.542 6.64-6.922 8.748z"/>
+                  <path fill="#FFA000" d="M.158 19.32l.84-5.38 6.924 8.748L.74 20.31a.88.88 0 0 1-.582-.99z"/>
+                  <path fill="#F57C00" d="M11.968 13.918l2.257-4.28 1.942-3.69a.54.54 0 0 1 .986.11l2.97 16.59-8.155-8.73z"/>
+                  <path fill="#FFCA28" d="M20.123 22.648L17.153 6.058l-1.942 3.69-3.243 6.17 8.155 6.73z"/>
                 </svg>
-                <span>ការកំណត់ Google & Firebase Auth (Cloudflare D1 Storage)</span>
+                <span>ការកំណត់ Firebase &amp; Google Sign-In (Cloudflare D1 Database)</span>
               </h4>
               <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
-                រក្សាទុក Google Client ID ឬ Firebase Config ចូលក្នុង Cloudflare D1 តែម្តងគត់ ដើម្បីឱ្យបេក្ខជនចុច Login ជាមួយ Google បានភ្លាមៗដោយគ្មានផ្ទាំងញ៉េញ៉ៃ
+                ចម្លងកូដ <code>firebaseConfig</code> ទាំងមូលពី Firebase Console (គម្រោង <strong>DB-DATA-FB</strong>) មកដាក់ទីនេះ ដើម្បីឱ្យបេក្ខជនចុច Login ជាមួយ Google Account ផ្ទាល់បានភ្លាមៗ!
               </p>
             </div>
-            <span style="font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); background: ${settings.googleClientId ? '#dcfce7' : '#fee2e2'}; color: ${settings.googleClientId ? '#15803d' : '#b91c1c'};">
-              ${settings.googleClientId ? 'បានភ្ជាប់រួចរាល់' : 'មិនទាន់បានកំណត់'}
+            <span style="font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); background: ${(settings.firebaseConfig?.apiKey || settings.googleClientId) ? '#dcfce7' : '#fee2e2'}; color: ${(settings.firebaseConfig?.apiKey || settings.googleClientId) ? '#15803d' : '#b91c1c'};">
+              ${(settings.firebaseConfig?.apiKey) ? `បានភ្ជាប់ Firebase (${settings.firebaseConfig.projectId || 'Active'})` : (settings.googleClientId ? 'បានភ្ជាប់ Client ID' : 'មិនទាន់បានកំណត់')}
             </span>
           </div>
 
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-            <input type="text" id="input-admin-google-client-id" class="form-input" placeholder="បញ្ចូល Google Client ID (ឧ. xxxxxx-xxxxxx.apps.googleusercontent.com)" value="${settings.googleClientId || ''}" style="flex: 1; min-width: 280px; font-size: 0.85rem; font-family: monospace;" />
-            <button type="button" id="btn-admin-save-google-config" class="btn-primary" style="padding: 0.6rem 1.1rem; font-size: 0.88rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">
-              ${getIcon('save')} <span>រក្សាទុកក្នុង Cloudflare D1</span>
+          <!-- Quick Guide -->
+          <div style="background: var(--bg-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.9rem; line-height: 1.5; border-left: 3px solid var(--primary-600);">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">
+              របៀបយកកូដពី Firebase Console (គម្រោង DB-DATA-FB)៖
+            </div>
+            1. ចូល Firebase Console &gt; ចុចលើសញ្ញាកង់ធ្មេញ ⚙️ <strong>Project settings</strong><br/>
+            2. អូសចុះក្រោមត្រង់កន្លែង <strong>Your apps (Web app)</strong><br/>
+            3. <strong>Copy (ចម្លង) កូដ <code>const firebaseConfig = { ... };</code> ទាំងមូល</strong> រួចយកមក Paste ក្នុងប្រអប់ខាងក្រោមនេះ!
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; font-size: 0.84rem;">
+              <span>កូដ Firebase Config (Paste កូដទាំងមូល ឬ JSON នៅទីនេះ) *</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">ប្រព័ន្ធចាប់យក apiKey, authDomain, projectId ដោយស្វ័យប្រវត្តិ</span>
+            </label>
+            <textarea id="input-admin-firebase-raw" class="form-textarea" style="min-height: 120px; font-family: monospace; font-size: 0.82rem; line-height: 1.45; background: var(--bg-card);" placeholder="Paste កូដ firebaseConfig ឬ JSON នៅទីនេះ...&#10;ឧទាហរណ៍៖&#10;const firebaseConfig = {&#10;  apiKey: &quot;AIzaSyC_pcL4lrh...&quot;,&#10;  authDomain: &quot;db-data-fb-....firebaseapp.com&quot;,&#10;  projectId: &quot;db-data-fb-...&quot;,&#10;  storageBucket: &quot;db-data-fb-...appspot.com&quot;,&#10;  messagingSenderId: &quot;737156289652&quot;,&#10;  appId: &quot;1:737156289652:web:...&quot;&#10;};">${settings.firebaseConfig ? JSON.stringify(settings.firebaseConfig, null, 2) : (settings.googleClientId || '')}</textarea>
+          </div>
+
+          ${settings.firebaseConfig?.apiKey ? `
+            <div style="margin-bottom: 0.75rem; padding: 0.65rem 0.85rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-md); font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.2rem;">
+              <div style="font-weight: 600; color: #059669; display: flex; align-items: center; gap: 0.35rem;">
+                ${getIcon('checkCircle')} <span>ទិន្នន័យ Firebase កំពុងដំណើរការក្នុងប្រព័ន្ធ៖</span>
+              </div>
+              <div style="color: var(--text-secondary); font-family: monospace; font-size: 0.78rem;">
+                • Project ID: <strong>${settings.firebaseConfig.projectId || 'db-data-fb'}</strong><br/>
+                • Auth Domain: <strong>${settings.firebaseConfig.authDomain || '—'}</strong><br/>
+                • API Key: <strong>${settings.firebaseConfig.apiKey ? settings.firebaseConfig.apiKey.slice(0, 14) + '...' : '—'}</strong>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Authorized Domains Reminder Alert -->
+          <div style="margin-bottom: 0.75rem; padding: 0.75rem 1rem; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+            <strong style="color: #d97706; display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.25rem;">
+              ${getIcon('alertCircle')} សំខាន់ខ្លាំង (Authorized domains ក្នុង Firebase)៖
+            </strong>
+            ដើម្បីឱ្យ Google អនុញ្ញាតឱ្យចូលគណនីលើ Website របស់យើង សូមចូល Firebase Console &gt; <strong>Authentication</strong> &gt; Tab <strong>Settings</strong> &gt; <strong>Authorized domains</strong> &gt; ចុច <strong>Add domain</strong> រួចបញ្ចូល៖<br/>
+            <code style="background: rgba(0,0,0,0.06); padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 600; color: #b45309; display: inline-block; margin-top: 0.25rem; font-family: monospace;">bonchantha57-ux.github.io</code>
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.2rem;">(និង <code>localhost</code> ប្រសិនបើតេស្តលើកុំព្យូទ័រផ្ទាល់)</span>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button type="button" id="btn-admin-save-firebase-config" class="btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+              ${getIcon('save')} <span>រក្សាទុក Firebase Config ក្នុង Cloudflare D1</span>
             </button>
           </div>
-          <p style="font-size: 0.76rem; color: var(--text-muted);">
-            ជំនួយ៖ Authorized JavaScript Origins លើ Google Cloud Console ត្រូវដាក់៖ <code>${window.location.origin}</code>
-          </p>
         </div>
 
         <!-- Filter & Search Controls -->
@@ -1165,26 +1203,43 @@ ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIME
         }
       });
 
-      tabContainer.querySelector('#btn-admin-save-google-config')?.addEventListener('click', async () => {
-        const val = tabContainer.querySelector('#input-admin-google-client-id')?.value.trim();
+      tabContainer.querySelector('#btn-admin-save-firebase-config')?.addEventListener('click', async () => {
+        const val = tabContainer.querySelector('#input-admin-firebase-raw')?.value.trim();
         if (!val) {
-          showToast('សូមបញ្ចូល Google Client ID ឬ Firebase Config!', 'error');
+          showToast('សូម Paste កូដ firebaseConfig ឬ JSON ពី Firebase Console!', 'error');
           return;
         }
 
-        showToast('កំពុងរក្សាទុកក្នុង Cloudflare D1...', 'info');
-        StorageService.saveSettings({ googleClientId: val });
+        const parsed = parseFirebaseConfigInput(val);
+        if (!parsed) {
+          showToast('មិនអាចស្គាល់ទម្រង់កូដ Firebase នេះទេ! សូម Copy ទាំងមូលពី Firebase Console (const firebaseConfig = { ... })', 'error');
+          return;
+        }
+
+        const saveBtn = tabContainer.querySelector('#btn-admin-save-firebase-config');
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = 'កំពុងរក្សាទុកក្នុង Cloudflare D1...';
+        }
+
+        showToast('កំពុងរក្សាទុកការកំណត់ Firebase ក្នុង Cloudflare D1...', 'info');
+        const updatedSettings = {
+          firebaseConfig: parsed,
+          googleClientId: parsed.googleClientId || parsed.apiKey || ''
+        };
+        StorageService.saveSettings(updatedSettings);
 
         if (settings.cfWorkerUrl) {
           try {
-            await CloudflareService.saveFirebaseConfig({ googleClientId: val }, settings.cfWorkerUrl, settings.cfApiKey);
+            await CloudflareService.saveFirebaseConfig(parsed, settings.cfWorkerUrl, settings.cfApiKey);
           } catch (e) {
             console.warn('Notice saving firebase config to D1:', e);
           }
         }
 
-        showToast('បានរក្សាទុក Google & Firebase Config ក្នុង Cloudflare D1 ជោគជ័យ!', 'success');
-        settings.googleClientId = val;
+        showToast(`បានរក្សាទុក Firebase Config (${parsed.projectId || 'Active'}) ក្នុង Cloudflare D1 ជោគជ័យ!`, 'success');
+        settings.firebaseConfig = parsed;
+        settings.googleClientId = updatedSettings.googleClientId;
         renderView();
       });
 

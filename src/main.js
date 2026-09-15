@@ -502,6 +502,9 @@ async function initBackgroundSync() {
         renderCurrentView();
       }
     }
+
+    // Also fetch remote Firebase Auth configuration from Cloudflare D1
+    await StorageService.fetchRemoteFirebaseConfig();
   } catch (err) {
     // Silent background fallback to cached/offline data
   }

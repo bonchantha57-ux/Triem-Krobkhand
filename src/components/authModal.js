@@ -155,21 +155,77 @@ export function openAuthModal(modalContainer, modalContent, onAuthSuccess, showT
 
   async function handleGoogleLogin() {
     let settings = StorageService.getSettings();
+    let fbConfig = settings.firebaseConfig;
     let clientId = (settings.googleClientId || '').trim();
 
-    // If client ID not yet in local settings, try fetching from Cloudflare D1
-    if (!clientId) {
+    // If config not yet loaded in local storage, attempt to fetch from Cloudflare D1
+    if ((!fbConfig || !fbConfig.apiKey) && !clientId) {
       showToast('កំពុងទាញការកំណត់ Google ពី Cloudflare D1...', 'info');
       try {
         const remoteConfig = await StorageService.fetchRemoteFirebaseConfig();
         if (remoteConfig) {
           settings = StorageService.getSettings();
+          fbConfig = settings.firebaseConfig;
           clientId = (settings.googleClientId || '').trim();
         }
       } catch (e) {}
     }
 
-    // 1. Genuine Google OAuth 2.0 Native Popup
+    // 1. Firebase Auth Web SDK (Native Google Provider Popup)
+    if (fbConfig && fbConfig.apiKey) {
+      showToast('កំពុងបើកផ្ទាំង Google Sign-In...', 'info');
+      try {
+        const { initializeApp, getApps, getApp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js');
+        const { getAuth, signInWithPopup, GoogleAuthProvider } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js');
+
+        const app = getApps().length === 0 ? initializeApp(fbConfig) : getApp();
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        const result = await signInWithPopup(auth, provider);
+        const fbUser = result.user;
+
+        if (!fbUser || !fbUser.email) {
+          throw new Error('មិនអាចចាប់យក Email ពី Google Account បានទេ');
+        }
+
+        showToast('កំពុងរក្សាទុកគណនីក្នុង Cloudflare D1...', 'info');
+        const res = await StorageService.loginWithGoogle({
+          name: fbUser.displayName || fbUser.email.split('@')[0],
+          email: fbUser.email,
+          picture: fbUser.photoURL || '',
+          sub: fbUser.uid,
+          provider: 'google'
+        });
+
+        if (res.success) {
+          showToast(`បានចូលគណនី Google (${res.user.email}) ដោយជោគជ័យ!`, 'success');
+          modalContainer.classList.add('hidden');
+          onAuthSuccess(res.user);
+          return;
+        } else {
+          showToast(res.message || 'បរាជ័យក្នុងការ Sync ចូល Cloudflare D1', 'error');
+          return;
+        }
+      } catch (err) {
+        console.error('Firebase Auth error:', err);
+        if (err.code === 'auth/unauthorized-domain') {
+          alert(`[Firebase Error]: Domain "${window.location.hostname}" មិនទាន់បានអនុញ្ញាតក្នុង Firebase ឡើយ!\n\nសូមចូលទៅកាន់ Firebase Console (គម្រោង DB-DATA-FB) > Authentication > Settings > Authorized domains > ចុច Add domain រួចដាក់:\n${window.location.hostname}`);
+          return;
+        } else if (err.code === 'auth/popup-closed-by-user') {
+          showToast('អ្នកបានបិទផ្ទាំង Google Sign-in', 'info');
+          return;
+        } else if (err.code === 'auth/cancelled-popup-request') {
+          return;
+        } else {
+          showToast('Firebase Google Auth បរាជ័យ៖ ' + (err.message || err.code), 'error');
+          return;
+        }
+      }
+    }
+
+    // 2. Fallback: Google Identity Services (Google OAuth 2.0 Client ID)
     if (clientId && window.google?.accounts?.oauth2) {
       try {
         const tokenClient = window.google.accounts.oauth2.initTokenClient({
@@ -219,8 +275,8 @@ export function openAuthModal(modalContainer, modalContent, onAuthSuccess, showT
       }
     }
 
-    // 2. Friendly prompt if Google/Firebase is not yet configured in Cloudflare D1
-    showToast('មុខងារ Google Sign-In មិនទាន់បានកំណត់ Key ក្នុង Cloudflare D1 ឡើយ។ សូម Admin កំណត់ក្នុងផ្ទាំង Admin Settings ឬប្រើ Email/Password។', 'info');
+    // 3. Neither is configured yet
+    showToast('មុខងារ Google Sign-In មិនទាន់បានកំណត់ Firebase Config ក្នុង Cloudflare D1 ឡើយ។ សូម Admin ចូលផ្ទាំង Admin > Users រួច Paste Firebase Config។', 'info');
   }
 
   function renderLoginForm() {
