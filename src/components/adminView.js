@@ -127,27 +127,6 @@ export function renderAdminView(container, showToast, refreshApp) {
             </div>
           </div>
 
-          <div class="form-row cols-3">
-            <div class="form-group">
-              <label class="form-label">មុខវិជ្ជា *</label>
-              <select id="exam-category" class="form-select">
-                ${CATEGORIES.map(c => `
-                  <option value="${c.id}" ${editingExam && editingExam.categoryId === c.id ? 'selected' : ''}>${c.name}</option>
-                `).join('')}
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">ឆ្នាំប្រឡង</label>
-              <input type="text" id="exam-year" class="form-input" placeholder="2024" value="${editingExam ? editingExam.year : '2024'}" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">រយៈពេល (នាទី)</label>
-              <input type="number" id="exam-duration" class="form-input" placeholder="60" value="${editingExam ? editingExam.durationMinutes : 60}" />
-            </div>
-          </div>
-
           <div class="form-group" style="margin-bottom: 1rem;">
             <label class="form-label">សេចក្តីសង្ខេបអំពីវិញ្ញាសា</label>
             <input type="text" id="exam-desc" class="form-input" placeholder="ឧ. វិញ្ញាសាផ្តោតលើរដ្ឋបាលសាធារណៈទំនើប និងច្បាប់មន្ត្រីរាជការ..." value="${editingExam ? (editingExam.description || '') : ''}" />
@@ -200,8 +179,6 @@ export function renderAdminView(container, showToast, refreshApp) {
               <th>រូបភាព</th>
               <th>ចំណងជើងវិញ្ញាសា</th>
               <th>ស្ថាប័ន / ក្រសួង</th>
-              <th>មុខវិជ្ជា</th>
-              <th>ឆ្នាំ</th>
               <th>សកម្មភាព</th>
             </tr>
           </thead>
@@ -213,10 +190,8 @@ export function renderAdminView(container, showToast, refreshApp) {
                     <img src="${exam.imageUrl || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=120&q=80'}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="" />
                   </div>
                 </td>
-                <td style="font-weight: 600; max-width: 260px;">${exam.title}</td>
+                <td style="font-weight: 600; max-width: 280px;">${exam.title}</td>
                 <td><span class="exam-badge">${exam.ministryName || exam.ministryId}</span></td>
-                <td>${exam.categoryName || exam.categoryId}</td>
-                <td>${exam.year || '2024'}</td>
                 <td>
                   <div class="table-actions">
                     <button class="btn-table-action btn-table-edit btn-edit-exam" data-id="${exam.id}">កែ</button>
@@ -289,26 +264,22 @@ export function renderAdminView(container, showToast, refreshApp) {
       e.preventDefault();
       const title = tabContainer.querySelector('#exam-title').value.trim();
       const ministryId = tabContainer.querySelector('#exam-ministry').value;
-      const categoryId = tabContainer.querySelector('#exam-category').value;
-      const year = tabContainer.querySelector('#exam-year').value.trim() || '2024';
-      const durationMinutes = parseInt(tabContainer.querySelector('#exam-duration').value, 10) || 60;
       const description = tabContainer.querySelector('#exam-desc').value.trim();
       const content = tabContainer.querySelector('#exam-content').value.trim();
       const finalImage = examImagePreview || urlInput.value.trim();
 
       const ministryObj = MINISTRIES.find(m => m.id === ministryId);
-      const categoryObj = CATEGORIES.find(c => c.id === categoryId);
 
       const examData = {
         id: editingExamId || ('exam-' + Date.now()),
         title,
         ministryId,
         ministryName: ministryObj ? ministryObj.name : ministryId,
-        categoryId,
-        categoryName: categoryObj ? categoryObj.name : categoryId,
-        year,
-        durationMinutes,
-        difficulty: 'មធ្យម',
+        categoryId: 'general',
+        categoryName: 'វិញ្ញាសារួមគ្រប់ឆ្នាំ',
+        year: '',
+        durationMinutes: 0,
+        difficulty: 'ទូទៅ',
         description,
         content,
         imageUrl: finalImage

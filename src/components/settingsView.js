@@ -66,7 +66,27 @@ export function renderSettingsView(container, showToast, refreshApp) {
         </div>
       </div>
 
-      <!-- 2. App Info & Civil Service Resources -->
+      <!-- 2. Developer & Creator Info -->
+      <div class="admin-form-card" style="margin-bottom: 1.25rem; border-left: 4px solid var(--primary-600);">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--primary-600); display: inline-flex; align-items: center;">${getIcon('shield')}</span>
+          <span>អ្នកអភិវឌ្ឍន៍កម្មវិធី (Developer)</span>
+        </h3>
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+          <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-700), var(--primary-500)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 800; box-shadow: var(--shadow-sm); flex-shrink: 0;">
+            BC
+          </div>
+          <div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: var(--primary-600);">BORN CHANTHA</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">Software Developer & Creator • Triem Krobkhand</div>
+          </div>
+        </div>
+        <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.6;">
+          កម្មវិធី <strong>ត្រៀមក្របខ័ណ្ឌ (Triem Krobkhand)</strong> ត្រូវបានបង្កើតឡើង និងរចនាឡើងយ៉ាងសម្រិតសម្រាំងដោយលោក <strong>BORN CHANTHA</strong> ក្នុងគោលបំណងជួយជ្រោមជ្រែងដល់បេក្ខជនគ្រប់រូបក្នុងការត្រៀមប្រឡងចូលក្របខ័ណ្ឌរដ្ឋដោយឥតគិតថ្លៃ និងមានប្រសិទ្ធភាពខ្ពស់។
+        </p>
+      </div>
+
+      <!-- 3. App Info & Civil Service Resources -->
       <div class="admin-form-card">
         <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
           <span style="color: var(--primary-600); display: inline-flex; align-items: center;">${getIcon('building')}</span>

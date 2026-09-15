@@ -269,6 +269,11 @@ export function renderProfileView(container, showToast, openExamModal, navigateT
             </div>
           `}
         </div>
+
+        <!-- Developer Note -->
+        <div style="text-align: center; padding: 1rem 0; font-size: 0.82rem; color: var(--text-muted);">
+          កម្មវិធីបង្កើត និងអភិវឌ្ឍដោយ៖ <strong style="color: var(--primary-600);">BORN CHANTHA</strong>
+        </div>
       </div>
     `;
 

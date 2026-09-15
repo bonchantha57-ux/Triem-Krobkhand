@@ -72,7 +72,7 @@ export function renderExamDetailView(container, examId, navigateTo, showToast) {
             ${exam.ministryName || 'ក្របខ័ណ្ឌរដ្ឋ'}
           </span>
           <span class="exam-badge" style="font-size: 0.82rem; padding: 0.35rem 0.8rem; background: var(--bg-subtle); color: var(--text-secondary); border: 1px solid var(--border-color);">
-            ${exam.categoryName || 'វប្បធម៌ទូទៅ'}
+            វិញ្ញាសារួមគ្រប់ឆ្នាំ
           </span>
         </div>
 
@@ -80,16 +80,12 @@ export function renderExamDetailView(container, examId, navigateTo, showToast) {
 
         <div class="exam-detail-meta-row">
           <div class="exam-detail-meta-item">
-            <span style="color: var(--primary-600); display: inline-flex;">${getIcon('calendar')}</span>
-            <span>ឆ្នាំប្រឡង៖ <strong>${exam.year || '2024'}</strong></span>
+            <span style="color: var(--primary-600); display: inline-flex;">${getIcon('building')}</span>
+            <span>ស្ថាប័ន / ក្រសួង៖ <strong>${exam.ministryName || 'ក្របខ័ណ្ឌរដ្ឋ'}</strong></span>
           </div>
           <div class="exam-detail-meta-item">
-            <span style="color: var(--primary-600); display: inline-flex;">${getIcon('timer')}</span>
-            <span>រយៈពេល៖ <strong>${exam.durationMinutes || 60} នាទី</strong></span>
-          </div>
-          <div class="exam-detail-meta-item">
-            <span style="color: var(--primary-600); display: inline-flex;">${getIcon('shield')}</span>
-            <span>កម្រិតវិញ្ញាសា៖ <strong>${exam.difficulty || 'មធ្យម'}</strong></span>
+            <span style="color: var(--primary-600); display: inline-flex;">${getIcon('fileText')}</span>
+            <span>ឯកសារ៖ <strong>វិញ្ញាសាពាក់ព័ន្ធគ្រប់ឆ្នាំចូលគ្នាតែមួយ</strong></span>
           </div>
         </div>
       </div>
@@ -141,6 +137,11 @@ export function renderExamDetailView(container, examId, navigateTo, showToast) {
           ${getIcon('timer')}
           <span>ទៅធ្វើតេស្តសាកល្បងឥឡូវនេះ</span>
         </button>
+      </div>
+
+      <!-- Developer Credit Note -->
+      <div style="text-align: center; margin-top: 1.75rem; padding: 0.75rem; color: var(--text-muted); font-size: 0.82rem;">
+        កម្មវិធី និងវិញ្ញាសាត្រូវបានរៀបចំអភិវឌ្ឍដោយ៖ <strong style="color: var(--primary-600);">BORN CHANTHA</strong>
       </div>
     </div>
   `;

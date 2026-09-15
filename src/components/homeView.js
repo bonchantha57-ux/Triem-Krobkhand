@@ -162,13 +162,15 @@ export function renderHomeView(container, navigateTo, openExamModal) {
             </div>
             <div class="exam-card-content">
               <div class="exam-meta-bar">
-                <span class="exam-badge">${exam.categoryName || 'វប្បធម៌ទូទៅ'}</span>
-                <span class="exam-year">${exam.year || '2024'}</span>
+                <span class="exam-badge">${exam.ministryName || 'ក្របខ័ណ្ឌរដ្ឋ'}</span>
+                <span style="font-size: 0.76rem; color: var(--text-muted); font-weight: 500;">វិញ្ញាសាពាក់ព័ន្ធសុទ្ធ</span>
               </div>
               <h4 class="exam-title">${exam.title}</h4>
               <p class="exam-desc">${exam.description || 'វិញ្ញាសាស្តង់ដារសម្រាប់ការប្រឡងចូលក្របខ័ណ្ឌរដ្ឋ'}</p>
               <div class="exam-footer">
-                <span style="display: inline-flex; align-items: center; gap: 0.35rem;">${getIcon('timer')} ${exam.durationMinutes || 60} នាទី</span>
+                <span style="display: inline-flex; align-items: center; gap: 0.35rem; color: var(--primary-600); font-size: 0.8rem; font-weight: 600;">
+                  ${getIcon('fileText')} គ្រប់ឆ្នាំចូលគ្នាតែមួយ
+                </span>
                 <button class="exam-details-btn btn-read-exam" data-id="${exam.id}">អានវិញ្ញាសា</button>
               </div>
             </div>
@@ -182,6 +184,20 @@ export function renderHomeView(container, navigateTo, openExamModal) {
         <p style="font-size: 0.85rem; max-width: 320px; margin: 0 auto;">វិញ្ញាសាប្រឡងនឹងបង្ហាញនៅទីនេះ ពេល Admin ចាប់ផ្តើមបញ្ចូលវិញ្ញាសាថ្មី។</p>
       </div>
     `}
+
+    <!-- Developer Attribution Banner -->
+    <div style="margin-top: 2rem; margin-bottom: 1.5rem; padding: 1.25rem 1rem; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-xl); text-align: center; box-shadow: var(--shadow-sm);">
+      <div style="display: inline-flex; align-items: center; gap: 0.45rem; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 0.35rem;">
+        <span style="color: var(--primary-600); display: inline-flex;">${getIcon('shield')}</span>
+        <span>ប្រព័ន្ធ និងកម្មវិធីត្រូវបានបង្កើត និងអភិវឌ្ឍដោយ</span>
+      </div>
+      <div style="font-size: 1.15rem; font-weight: 800; color: var(--primary-600); letter-spacing: 0.5px;">
+        BORN CHANTHA
+      </div>
+      <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+        Lead Software Developer • Triem Krobkhand
+      </div>
+    </div>
   `;
 
   // Attach Event Handlers

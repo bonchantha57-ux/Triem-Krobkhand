@@ -68,12 +68,14 @@ export function renderExamLibraryView(container, filterState = {}, openExamModal
           <div class="exam-card-content">
             <div class="exam-meta-bar">
               <span class="exam-badge">${exam.ministryName || 'ក្របខ័ណ្ឌរដ្ឋ'}</span>
-              <span class="exam-year">ឆ្នាំ ${exam.year || '2024'}</span>
+              <span style="font-size: 0.76rem; color: var(--text-muted); font-weight: 500;">វិញ្ញាសាប្រមូលផ្តុំ</span>
             </div>
             <h4 class="exam-title">${exam.title}</h4>
             <p class="exam-desc">${exam.description || 'វិញ្ញាសាស្តង់ដារសម្រាប់ការប្រឡងចូលក្របខ័ណ្ឌរដ្ឋ'}</p>
             <div class="exam-footer">
-              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">${getIcon('timer')} ${exam.durationMinutes || 60} នាទី • ${exam.difficulty || 'មធ្យម'}</span>
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem; color: var(--primary-600); font-size: 0.8rem; font-weight: 600;">
+                ${getIcon('fileText')} វិញ្ញាសាពាក់ព័ន្ធសុទ្ធ
+              </span>
               <button class="exam-details-btn btn-read-exam" data-id="${exam.id}">អានវិញ្ញាសា</button>
             </div>
           </div>
