@@ -34,8 +34,80 @@
   <!-- Immediate Anti-Inspect & Right-Click Blocker -->
   <script>
     (function() {
-      // Disable Right Click
-      document.addEventListener('contextmenu', function(e) {
+      // 1. Immediately Block Right-Click Context Menu
+      function blockContextMenu(e) {
+        var tag = e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '';
+        if (tag !== 'input' && tag !== 'textarea') {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }
+      document.addEventListener('contextmenu', blockContextMenu, true);
+      window.addEventListener('contextmenu', blockContextMenu, true);
+
+      // 2. Disable Middle Click & Right Mouse Down
+      document.addEventListener('mousedown', function(e) {
+        if (e.button === 2) {
+          var tag = e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '';
+          if (tag !== 'input' && tag !== 'textarea') {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }
+      }, true);
+
+      // 3. Immediately Block Shortcuts (F12, Ctrl+Shift+I/J/C/K/E/S/P/M, Cmd+Opt+I/J/C, Ctrl+U, Ctrl+S, Ctrl+A)
+      function blockKeys(e) {
+        var key = (e.key || '').toLowerCase();
+        var code = e.keyCode || e.which;
+        var isCtrlOrCmd = e.ctrlKey || e.metaKey;
+
+        // F12
+        if (key === 'f12' || code === 123) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+
+        // Ctrl/Cmd + Shift + [I, J, C, K, E, S, P, M]
+        if (isCtrlOrCmd && e.shiftKey && ['i', 'j', 'c', 'k', 'e', 's', 'p', 'm'].indexOf(key) !== -1) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+
+        // Mac DevTools: Cmd + Option + [I, J, C, U, K]
+        if (isCtrlOrCmd && e.altKey && ['i', 'j', 'c', 'u', 'k'].indexOf(key) !== -1) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+
+        // Ctrl + U (View Source), Ctrl + S (Save)
+        if (isCtrlOrCmd && (key === 'u' || key === 's')) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+
+        // Ctrl + A outside inputs (prevent select all)
+        if (isCtrlOrCmd && key === 'a') {
+          var tag = e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '';
+          if (tag !== 'input' && tag !== 'textarea' && !e.target.isContentEditable) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }
+      }
+
+      window.addEventListener('keydown', blockKeys, true);
+      document.addEventListener('keydown', blockKeys, true);
+
+      // 4. Disable Drag & Selection
+      document.addEventListener('dragstart', function(e) {
         var tag = e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '';
         if (tag !== 'input' && tag !== 'textarea') {
           e.preventDefault();
@@ -43,18 +115,9 @@
         }
       }, true);
 
-      // Disable Shortcut Keys (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
-      window.addEventListener('keydown', function(e) {
-        if (e.key === 'F12' || e.keyCode === 123) {
-          e.preventDefault();
-          return false;
-        }
-        var isCtrlOrCmd = e.ctrlKey || e.metaKey;
-        if (isCtrlOrCmd && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c', 'K', 'k'].indexOf(e.key) !== -1) {
-          e.preventDefault();
-          return false;
-        }
-        if (isCtrlOrCmd && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) {
+      document.addEventListener('selectstart', function(e) {
+        var tag = e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '';
+        if (tag !== 'input' && tag !== 'textarea' && !e.target.isContentEditable) {
           e.preventDefault();
           return false;
         }
