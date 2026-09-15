@@ -10,6 +10,10 @@ import { renderExamDetailView } from './components/examDetailView.js';
 import { openAuthModal } from './components/authModal.js';
 import { CloudflareService } from './services/cloudflareApi.js';
 import { getIcon } from './utils/icons.js';
+import { initAntiInspect } from './utils/antiInspect.js';
+
+// Initialize Client Security (Anti-Inspect & Protection)
+initAntiInspect();
 
 // Application State
 let currentTab = 'home';
