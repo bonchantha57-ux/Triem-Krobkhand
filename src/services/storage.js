@@ -484,6 +484,24 @@ export const StorageService = {
     return updated;
   },
 
+  async fetchRemoteFirebaseConfig() {
+    const settings = this.getSettings();
+    const workerUrl = settings.cfWorkerUrl || DEFAULT_WORKER_URL;
+    if (!workerUrl) return null;
+    try {
+      const res = await CloudflareService.getFirebaseConfig(workerUrl);
+      if (res.success && res.config) {
+        const clientId = res.config.googleClientId || res.config.clientId || (res.config.authDomain ? res.config.authDomain.split('.')[0] : '');
+        this.saveSettings({ 
+          firebaseConfig: res.config, 
+          googleClientId: clientId || settings.googleClientId 
+        });
+        return res.config;
+      }
+    } catch (e) {}
+    return null;
+  },
+
   // Profile
   getProfile() {
     try {

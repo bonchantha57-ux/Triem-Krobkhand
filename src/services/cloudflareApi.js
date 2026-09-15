@@ -268,5 +268,50 @@ export const CloudflareService = {
     } catch (e) {
       return { success: false, message: e.message };
     }
+  },
+
+  /**
+   * Fetch Firebase / Google Auth configuration from Cloudflare D1
+   */
+  async getFirebaseConfig(workerUrl) {
+    if (!workerUrl || !workerUrl.trim()) return { success: false, config: null };
+    const cleanUrl = workerUrl.trim().replace(/\/+$/, '');
+    try {
+      const res = await fetch(`${cleanUrl}/api/auth/firebase-config`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!res.ok) return { success: false, config: null };
+      return await res.json().catch(() => ({ success: false, config: null }));
+    } catch (e) {
+      return { success: false, config: null };
+    }
+  },
+
+  /**
+   * Save Firebase / Google Auth configuration into Cloudflare D1 (Admin only)
+   */
+  async saveFirebaseConfig(config, workerUrl, apiKey = '') {
+    if (!workerUrl || !workerUrl.trim()) {
+      return { success: false, message: 'Cloudflare Worker URL មិនទាន់បានកំណត់ទេ!' };
+    }
+    const cleanUrl = workerUrl.trim().replace(/\/+$/, '');
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
+      const res = await fetch(`${cleanUrl}/api/auth/save-firebase-config`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ config })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || 'បរាជ័យក្នុងការរក្សាទុក Firebase Config');
+      }
+      return data;
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
   }
 };

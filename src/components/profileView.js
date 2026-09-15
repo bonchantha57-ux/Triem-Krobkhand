@@ -2,12 +2,65 @@ import { StorageService } from '../services/storage.js';
 import { MINISTRIES } from '../data/defaultData.js';
 import { getIcon } from '../utils/icons.js';
 
-export function renderProfileView(container, showToast, openExamModal, navigateTo) {
+export function renderProfileView(container, showToast, openExamModal, navigateTo, triggerAuthModal) {
   let isEditing = false;
+  const currentUser = StorageService.getCurrentUser();
   const profile = StorageService.getProfile();
   const results = StorageService.getQuizResults();
   const bookmarks = StorageService.getBookmarks();
   const allExams = StorageService.getExams();
+
+  // If user is not logged in, show clean unauthenticated screen
+  if (!currentUser) {
+    container.innerHTML = `
+      <div class="profile-wrapper">
+        <div class="profile-hero-card" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1.5rem; border: 1.5px dashed var(--border-color); background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); margin-bottom: 1.5rem;">
+          <div style="width: 76px; height: 76px; border-radius: 50%; background: var(--bg-subtle); color: var(--text-muted); display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; border: 2px dashed var(--border-color);">
+            <span style="display: inline-flex; align-items: center; transform: scale(1.4);">${getIcon('user')}</span>
+          </div>
+
+          <div style="display: inline-block; padding: 0.25rem 0.85rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700; background: #fef2f2; color: #dc2626; margin-bottom: 0.65rem;">
+            គ្មានគណនី (No Account)
+          </div>
+
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.35rem;">
+            មិនទាន់មានគណនីក្នុងប្រព័ន្ធ
+          </h2>
+
+          <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 380px; margin: 0 auto 1.75rem; line-height: 1.55;">
+            សូមចូលគណនី ឬបង្កើតគណនីថ្មី ដើម្បីតាមដានលទ្ធផលតេស្ត វិញ្ញាសាដែលបានរក្សាទុក និងព័ត៌មានបេក្ខជនរបស់អ្នក។
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%; max-width: 320px;">
+            <button id="btn-profile-login" class="btn-primary" style="justify-content: center; padding: 0.7rem 1.25rem; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);">
+              ${getIcon('user')} <span>ចូលគណនី (Login)</span>
+            </button>
+            <button id="btn-profile-register" class="btn-secondary" style="justify-content: center; padding: 0.7rem 1.25rem; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.45rem; color: var(--text-primary); border-color: var(--border-color); background: var(--bg-surface);">
+              <span>បង្កើតគណនីថ្មី (Create Account)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.querySelector('#btn-profile-login')?.addEventListener('click', () => {
+      if (triggerAuthModal) {
+        triggerAuthModal('login');
+      } else {
+        document.getElementById('btn-auth-access')?.click();
+      }
+    });
+
+    container.querySelector('#btn-profile-register')?.addEventListener('click', () => {
+      if (triggerAuthModal) {
+        triggerAuthModal('register');
+      } else {
+        document.getElementById('btn-auth-access')?.click();
+      }
+    });
+
+    return;
+  }
 
   const bookmarkedExams = allExams.filter(e => bookmarks.includes(e.id));
   const totalTests = results.length;
@@ -30,14 +83,24 @@ export function renderProfileView(container, showToast, openExamModal, navigateT
           <div class="profile-info">
             <div class="profile-name-row">
               <div class="profile-name-group">
-                <h2 class="profile-name">${profile.name || 'បេក្ខជនត្រៀមប្រឡង'}</h2>
-                <span class="profile-role-tag">បេក្ខជន</span>
+                <h2 class="profile-name">${currentUser.name || profile.name || 'បេក្ខជន'}</h2>
+                <span class="profile-role-tag" style="background: ${currentUser.role === 'admin' ? '#fef3c7' : 'var(--primary-50)'}; color: ${currentUser.role === 'admin' ? '#b45309' : 'var(--primary-700)'};">
+                  ${currentUser.role === 'admin' ? 'រដ្ឋបាល (Admin)' : (currentUser.provider === 'google' ? 'Google Account' : 'បេក្ខជន')}
+                </span>
               </div>
-              <button id="btn-toggle-edit-profile" class="btn-profile-edit" title="កែប្រែព័ត៌មាន">
-                ${isEditing ? `${getIcon('x')} <span>បិទ</span>` : `${getIcon('edit')} <span>កែប្រែ</span>`}
-              </button>
+              <div style="display: flex; gap: 0.35rem; align-items: center;">
+                <button id="btn-toggle-edit-profile" class="btn-profile-edit" title="កែប្រែព័ត៌មាន">
+                  ${isEditing ? `${getIcon('x')} <span>បិទ</span>` : `${getIcon('edit')} <span>កែប្រែ</span>`}
+                </button>
+                <button id="btn-profile-logout" class="btn-profile-edit" style="color: var(--danger-600); border-color: rgba(239, 68, 68, 0.3);" title="ចាកចេញពីគណនី">
+                  ${getIcon('logout')} <span>ចាកចេញ</span>
+                </button>
+              </div>
             </div>
             <div class="profile-chips-row">
+              <span class="profile-chip" title="Email">
+                <span>${currentUser.email || 'គ្មាន Email'}</span>
+              </span>
               <span class="profile-chip target" title="ស្ថាប័នគោលដៅ">
                 ${getIcon('building')}
                 <span>${profile.targetMinistry || 'សាលាភូមិន្ទរដ្ឋបាល (ERA)'}</span>
@@ -208,6 +271,16 @@ export function renderProfileView(container, showToast, openExamModal, navigateT
     container.querySelector('#btn-toggle-edit-profile')?.addEventListener('click', () => {
       isEditing = !isEditing;
       render();
+    });
+
+    // Logout from profile
+    container.querySelector('#btn-profile-logout')?.addEventListener('click', () => {
+      StorageService.logout();
+      showToast('បានចាកចេញពីគណនីដោយជោគជ័យ', 'info');
+      if (typeof window.refreshAppAuthUI === 'function') {
+        window.refreshAppAuthUI();
+      }
+      renderProfileView(container, showToast, openExamModal, navigateTo, triggerAuthModal);
     });
 
     // Save profile

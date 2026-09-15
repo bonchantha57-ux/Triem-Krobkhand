@@ -268,6 +268,19 @@ export function navigateTo(tab, params = {}) {
   renderCurrentView();
 }
 
+window.refreshAppAuthUI = updateAuthUI;
+
+export function triggerAuthModal(initialTab = 'login') {
+  openAuthModal(modalContainer, modalContent, (user, targetTab) => {
+    updateAuthUI();
+    if (targetTab === 'admin' || user?.role === 'admin') {
+      navigateTo('admin');
+    } else {
+      renderCurrentView();
+    }
+  }, showToast, initialTab);
+}
+
 function renderCurrentView() {
   viewContainer.innerHTML = '';
   const currentUser = StorageService.getCurrentUser();
@@ -286,7 +299,7 @@ function renderCurrentView() {
       renderSettingsView(viewContainer, showToast, renderCurrentView);
       break;
     case 'profile':
-      renderProfileView(viewContainer, showToast, openExamModal, navigateTo);
+      renderProfileView(viewContainer, showToast, openExamModal, navigateTo, triggerAuthModal);
       break;
     case 'admin':
       // Auto allow if user is logged in as admin

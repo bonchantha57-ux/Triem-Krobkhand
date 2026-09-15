@@ -375,7 +375,55 @@ export default {
         });
       }
 
-      // 5. USER ACCOUNTS & GOOGLE SYNC ENDPOINTS (/api/users and /api/auth/sync-user)
+      // 5. FIREBASE & GOOGLE CONFIGURATION ENDPOINTS (/api/auth/firebase-config)
+      if (path === '/api/auth/firebase-config' && method === 'GET') {
+        let config = null;
+        try {
+          const row = await db.prepare("SELECT value FROM system_config WHERE key = 'firebase_config'").first();
+          if (row && row.value) {
+            config = JSON.parse(row.value);
+          }
+        } catch (e) {}
+
+        // Fallback to environment variables if set in Cloudflare Worker
+        if (!config && (env.FIREBASE_CONFIG || env.GOOGLE_CLIENT_ID)) {
+          config = env.FIREBASE_CONFIG ? (typeof env.FIREBASE_CONFIG === 'string' ? JSON.parse(env.FIREBASE_CONFIG) : env.FIREBASE_CONFIG) : {};
+          if (env.GOOGLE_CLIENT_ID) config.googleClientId = env.GOOGLE_CLIENT_ID;
+        }
+
+        return json({
+          success: true,
+          configured: !!(config && (config.apiKey || config.googleClientId || config.clientId)),
+          config: config || null
+        });
+      }
+
+      if (path === '/api/auth/save-firebase-config' && method === 'POST') {
+        const body = await request.json();
+        const config = body.config || body;
+
+        // Auto create system_config table if not exists
+        await db.prepare(`
+          CREATE TABLE IF NOT EXISTS system_config (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )
+        `).run();
+
+        await db.prepare(`
+          INSERT INTO system_config (key, value)
+          VALUES ('firebase_config', ?)
+          ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+        `).bind(typeof config === 'string' ? config : JSON.stringify(config)).run();
+
+        return json({
+          success: true,
+          message: 'បានរក្សាទុកការកំណត់ Firebase & Google Auth ក្នុង Cloudflare D1 រួចរាល់!'
+        });
+      }
+
+      // 6. USER ACCOUNTS & GOOGLE SYNC ENDPOINTS (/api/users and /api/auth/sync-user)
       if (path === '/api/auth/sync-user' && method === 'POST') {
         const body = await request.json();
         const {

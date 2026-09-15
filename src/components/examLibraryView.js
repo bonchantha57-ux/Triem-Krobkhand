@@ -10,6 +10,9 @@ export function renderExamLibraryView(container, filterState = {}, openExamModal
   const activeMinistries = StorageService.getActiveMinistries();
 
   function renderList() {
+    const gridContainer = container.querySelector('#exams-cards-container');
+    if (!gridContainer) return;
+
     const allExams = StorageService.getExams();
 
     if (allExams.length === 0) {

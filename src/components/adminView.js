@@ -1006,6 +1006,39 @@ ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIME
           </div>
         </div>
 
+        <!-- Firebase & Google Auth Setup Card in Cloudflare D1 -->
+        <div class="admin-form-card" style="margin-bottom: 1.5rem; border-left: 4px solid #4285F4;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+                <span>ការកំណត់ Google & Firebase Auth (Cloudflare D1 Storage)</span>
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+                រក្សាទុក Google Client ID ឬ Firebase Config ចូលក្នុង Cloudflare D1 តែម្តងគត់ ដើម្បីឱ្យបេក្ខជនចុច Login ជាមួយ Google បានភ្លាមៗដោយគ្មានផ្ទាំងញ៉េញ៉ៃ
+              </p>
+            </div>
+            <span style="font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); background: ${settings.googleClientId ? '#dcfce7' : '#fee2e2'}; color: ${settings.googleClientId ? '#15803d' : '#b91c1c'};">
+              ${settings.googleClientId ? 'បានភ្ជាប់រួចរាល់' : 'មិនទាន់បានកំណត់'}
+            </span>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+            <input type="text" id="input-admin-google-client-id" class="form-input" placeholder="បញ្ចូល Google Client ID (ឧ. xxxxxx-xxxxxx.apps.googleusercontent.com)" value="${settings.googleClientId || ''}" style="flex: 1; min-width: 280px; font-size: 0.85rem; font-family: monospace;" />
+            <button type="button" id="btn-admin-save-google-config" class="btn-primary" style="padding: 0.6rem 1.1rem; font-size: 0.88rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem;">
+              ${getIcon('save')} <span>រក្សាទុកក្នុង Cloudflare D1</span>
+            </button>
+          </div>
+          <p style="font-size: 0.76rem; color: var(--text-muted);">
+            ជំនួយ៖ Authorized JavaScript Origins លើ Google Cloud Console ត្រូវដាក់៖ <code>${window.location.origin}</code>
+          </p>
+        </div>
+
         <!-- Filter & Search Controls -->
         <div class="admin-form-card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
           <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between;">
@@ -1130,6 +1163,29 @@ ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIME
           updatedInput.focus();
           updatedInput.setSelectionRange(updatedInput.value.length, updatedInput.value.length);
         }
+      });
+
+      tabContainer.querySelector('#btn-admin-save-google-config')?.addEventListener('click', async () => {
+        const val = tabContainer.querySelector('#input-admin-google-client-id')?.value.trim();
+        if (!val) {
+          showToast('សូមបញ្ចូល Google Client ID ឬ Firebase Config!', 'error');
+          return;
+        }
+
+        showToast('កំពុងរក្សាទុកក្នុង Cloudflare D1...', 'info');
+        StorageService.saveSettings({ googleClientId: val });
+
+        if (settings.cfWorkerUrl) {
+          try {
+            await CloudflareService.saveFirebaseConfig({ googleClientId: val }, settings.cfWorkerUrl, settings.cfApiKey);
+          } catch (e) {
+            console.warn('Notice saving firebase config to D1:', e);
+          }
+        }
+
+        showToast('បានរក្សាទុក Google & Firebase Config ក្នុង Cloudflare D1 ជោគជ័យ!', 'success');
+        settings.googleClientId = val;
+        renderView();
       });
 
       tabContainer.querySelectorAll('.btn-filter-provider').forEach(btn => {
