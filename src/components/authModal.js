@@ -283,7 +283,7 @@ export function openAuthModal(modalContainer, modalContent, onAuthSuccess, showT
     return `
       <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="width: 56px; height: 56px; border-radius: 16px; overflow: hidden; margin: 0 auto 0.65rem; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25); border: 2px solid rgba(217, 119, 6, 0.35);">
-          <img src="/logo.jpg" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+          <img src="./logo.jpg" onerror="this.onerror=null; this.src='logo.jpg';" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
         </div>
         <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
           ចូលគណនីត្រៀមក្របខ័ណ្ឌ
@@ -348,7 +348,7 @@ export function openAuthModal(modalContainer, modalContent, onAuthSuccess, showT
     return `
       <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="width: 56px; height: 56px; border-radius: 16px; overflow: hidden; margin: 0 auto 0.65rem; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25); border: 2px solid rgba(217, 119, 6, 0.35);">
-          <img src="/logo.jpg" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+          <img src="./logo.jpg" onerror="this.onerror=null; this.src='logo.jpg';" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
         </div>
         <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
           ចុះឈ្មោះគណនីថ្មី

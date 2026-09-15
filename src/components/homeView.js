@@ -45,7 +45,7 @@ export function renderHomeView(container, navigateTo, openExamModal) {
         </div>
       </div>
       <div class="hero-emblem-badge" title="Triem Krobkhand Official Logo">
-        <img src="/logo.jpg" alt="Triem Krobkhand Logo" class="hero-emblem-img" />
+        <img src="./logo.jpg" onerror="this.onerror=null; this.src='logo.jpg';" alt="Triem Krobkhand Logo" class="hero-emblem-img" />
       </div>
     </div>
 
