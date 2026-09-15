@@ -6,6 +6,9 @@
   <meta name="theme-color" content="#1e3a8a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ត្រៀមក្របខ័ណ្ឌ">
+  <meta name="application-name" content="ត្រៀមក្របខ័ណ្ឌ">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>Triem Krobkhand - ត្រៀមប្រឡងក្របខ័ណ្ឌរដ្ឋ</title>
   
   <!-- Khmer Fonts -->
@@ -13,9 +16,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- App Icons & Favicon -->
-  <link rel="icon" type="image/jpeg" href="/logo.jpg">
-  <link rel="apple-touch-icon" href="/logo.jpg">
+  <!-- App Icons, Favicon & Apple Touch Icons (Home Screen) -->
+  <link rel="icon" type="image/jpeg" href="./logo.jpg">
+  <link rel="shortcut icon" href="./favicon.ico">
+  <link rel="apple-touch-icon" href="./logo.jpg">
+  <link rel="apple-touch-icon" sizes="152x152" href="./logo.jpg">
+  <link rel="apple-touch-icon" sizes="180x180" href="./logo.jpg">
+  <link rel="apple-touch-icon" sizes="167x167" href="./logo.jpg">
+  <link rel="apple-touch-icon-precomposed" href="./logo.jpg">
+  <link rel="manifest" href="./manifest.json">
   
   <!-- Google Identity Services (GIS) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -29,7 +38,7 @@
       <div class="header-container">
         <div class="brand" id="brand-logo" role="button" tabindex="0">
           <div class="brand-badge">
-            <img src="/logo.jpg" alt="Triem Krobkhand Logo" class="brand-logo-img" />
+            <img src="./logo.jpg" onerror="this.onerror=null; this.src='logo.jpg';" alt="Triem Krobkhand Logo" class="brand-logo-img" />
           </div>
           <div class="brand-text">
             <h1 class="brand-title">ត្រៀមក្របខ័ណ្ឌ</h1>
