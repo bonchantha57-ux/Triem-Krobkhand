@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="hero-emblem-badge" title="Triem Krobkhand Official Logo">
-        <img src="/logo.jpg" alt="Triem Krobkhand Logo" class="hero-emblem-img" />
+        <img src="./logo.jpg" onerror="this.onerror=null; this.src='logo.jpg';" alt="Triem Krobkhand Logo" class="hero-emblem-img" />
       </div>
     </div>
 
@@ -1555,7 +1555,7 @@ ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIME
 ${window.location.hostname}`);return}else if(d.code==="auth/popup-closed-by-user"){r("អ្នកបានបិទផ្ទាំង Google Sign-in","info");return}else{if(d.code==="auth/cancelled-popup-request")return;r("Firebase Google Auth បរាជ័យ៖ "+(d.message||d.code),"error");return}}}if(U&&((a=(D=window.google)==null?void 0:D.accounts)!=null&&a.oauth2))try{window.google.accounts.oauth2.initTokenClient({client_id:U,scope:"https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",callback:async n=>{if(n.error){r("បរាជ័យក្នុងការភ្ជាប់ជាមួយ Google៖ "+n.error,"error");return}r("កំពុងចាប់យកព័ត៌មានពី Google...","info");try{const w=await fetch("https://www.googleapis.com/oauth2/v3/userinfo",{headers:{Authorization:`Bearer ${n.access_token}`}}).then(c=>c.json());if(!w||!w.email)throw new Error("មិនអាចទាញទិន្នន័យ Email ពី Google បានទេ");const h=await x.loginWithGoogle({name:w.name||w.email.split("@")[0],email:w.email,picture:w.picture||"",sub:w.sub,provider:"google"});h.success?(r(`បានចូលគណនី Google (${h.user.email}) ដោយជោគជ័យ!`,"success"),e.classList.add("hidden"),i(h.user)):r(h.message||"បរាជ័យក្នុងការ Sync ចូល D1","error")}catch(w){r("បរាជ័យក្នុងការចាប់យក Account ពី Google៖ "+w.message,"error")}}}).requestAccessToken({prompt:"select_account"});return}catch(d){console.warn("Google OAuth Token Client error:",d)}r("មុខងារ Google Sign-In មិនទាន់បានកំណត់ Firebase Config ក្នុង Cloudflare D1 ឡើយ។ សូម Admin ចូលផ្ទាំង Admin > Users រួច Paste Firebase Config។","info")}function S(){return`
       <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="width: 56px; height: 56px; border-radius: 16px; overflow: hidden; margin: 0 auto 0.65rem; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25); border: 2px solid rgba(217, 119, 6, 0.35);">
-          <img src="/logo.jpg" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+          <img src="./logo.jpg" onerror="this.onerror=null; this.src='logo.jpg';" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
         </div>
         <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
           ចូលគណនីត្រៀមក្របខ័ណ្ឌ
@@ -1616,7 +1616,7 @@ ${window.location.hostname}`);return}else if(d.code==="auth/popup-closed-by-user
     `}function A(){return`
       <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="width: 56px; height: 56px; border-radius: 16px; overflow: hidden; margin: 0 auto 0.65rem; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25); border: 2px solid rgba(217, 119, 6, 0.35);">
-          <img src="/logo.jpg" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+          <img src="./logo.jpg" onerror="this.onerror=null; this.src='logo.jpg';" alt="Triem Krobkhand Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
         </div>
         <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
           ចុះឈ្មោះគណនីថ្មី
