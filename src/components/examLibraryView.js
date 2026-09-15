@@ -58,10 +58,10 @@ export function renderExamLibraryView(container, filterState = {}, openExamModal
     gridContainer.innerHTML = filtered.map(exam => {
       const isBookmarked = StorageService.isBookmarked(exam.id);
       return `
-        <div class="exam-card" data-id="${exam.id}">
-          <div style="position: relative;">
+        <div class="exam-card" data-id="${exam.id}" style="cursor: pointer;">
+          <div class="exam-card-image-wrap">
             <img class="exam-card-image" src="${exam.imageUrl || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80'}" alt="${exam.title}" loading="lazy" />
-            <button class="icon-btn btn-bookmark" data-id="${exam.id}" title="រក្សាទុក" style="position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(4px); box-shadow: var(--shadow-sm); display: inline-flex; align-items: center; justify-content: center;">
+            <button class="icon-btn btn-bookmark" data-id="${exam.id}" title="រក្សាទុក" style="position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(4px); box-shadow: var(--shadow-sm); display: inline-flex; align-items: center; justify-content: center; z-index: 2;">
               ${isBookmarked ? getIcon('starFilled') : getIcon('star')}
             </button>
           </div>
@@ -81,9 +81,17 @@ export function renderExamLibraryView(container, filterState = {}, openExamModal
       `;
     }).join('');
 
-    // Reattach listeners
+    // Reattach listeners for card clicks and read buttons
+    gridContainer.querySelectorAll('.exam-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const exam = allExams.find(x => x.id === card.dataset.id);
+        if (exam) openExamModal(exam);
+      });
+    });
+
     gridContainer.querySelectorAll('.btn-read-exam').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const exam = allExams.find(x => x.id === btn.dataset.id);
         if (exam) openExamModal(exam);
       });

@@ -6,6 +6,7 @@ import { renderQuizSimulatorView } from './components/quizSimulatorView.js';
 import { renderSettingsView } from './components/settingsView.js';
 import { renderProfileView } from './components/profileView.js';
 import { renderAdminView } from './components/adminView.js';
+import { renderExamDetailView } from './components/examDetailView.js';
 import { openAuthModal } from './components/authModal.js';
 import { CloudflareService } from './services/cloudflareApi.js';
 import { getIcon } from './utils/icons.js';
@@ -40,114 +41,11 @@ export function showToast(message, type = 'info') {
   }, 3500);
 }
 
-// 2. Exam Reader Modal
+// 2. Exam Reader (Direct navigation to full-page Exam Detail View)
 export function openExamModal(exam) {
-  let fontSize = 16;
-  const isBookmarked = StorageService.isBookmarked(exam.id);
-
-  modalContent.innerHTML = `
-    <div class="modal-header">
-      <div>
-        <span class="exam-badge" style="margin-bottom: 0.25rem; display: inline-block;">${exam.ministryName || 'ក្របខ័ណ្ឌរដ្ឋ'}</span>
-        <h3 class="modal-title">${exam.title}</h3>
-      </div>
-      <button class="modal-close-btn" id="btn-close-modal" aria-label="Close" style="display: inline-flex; align-items: center; justify-content: center;">
-        ${getIcon('x')}
-      </button>
-    </div>
-
-    <!-- Reading Controls Bar -->
-    <div style="padding: 0.6rem 1.5rem; background: var(--bg-subtle); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.85rem;">
-      <div style="color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-        <span style="display: inline-flex; align-items: center; gap: 0.25rem;">${getIcon('calendar')} ឆ្នាំ ${exam.year || '2024'}</span>
-        <span>•</span>
-        <span style="display: inline-flex; align-items: center; gap: 0.25rem;">${getIcon('timer')} ${exam.durationMinutes || 60} នាទី</span>
-        <span>•</span>
-        <span>${exam.difficulty || 'មធ្យម'}</span>
-      </div>
-      <div style="display: flex; gap: 0.4rem; align-items: center;">
-        <span style="color: var(--text-muted); font-size: 0.78rem;">ពង្រីកអក្សរ៖</span>
-        <button id="btn-zoom-out" class="icon-btn" style="width: 30px; height: 30px; font-size: 0.8rem;" title="បង្រួមអក្សរ">A-</button>
-        <button id="btn-zoom-in" class="icon-btn" style="width: 30px; height: 30px; font-size: 0.8rem;" title="ពង្រីកអក្សរ">A+</button>
-        <button id="btn-modal-bookmark" class="icon-btn" style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;" title="រក្សាទុក">
-          ${isBookmarked ? getIcon('starFilled') : getIcon('star')}
-        </button>
-        <button id="btn-print-exam" class="icon-btn" style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;" title="បោះពុម្ព / Print">
-          ${getIcon('printer')}
-        </button>
-      </div>
-    </div>
-
-    <!-- Modal Body -->
-    <div class="modal-body" id="exam-modal-body" style="font-size: 16px;">
-      ${exam.imageUrl ? `
-        <div style="margin-bottom: 1.25rem; border-radius: var(--radius-lg); overflow: hidden; max-height: 300px; display: flex; justify-content: center; background: var(--bg-subtle); border: 1px solid var(--border-color);">
-          <img src="${exam.imageUrl}" alt="${exam.title}" style="max-width: 100%; max-height: 300px; object-fit: contain;" />
-        </div>
-      ` : ''}
-
-      <div style="margin-bottom: 1.25rem; padding: 1rem; border-radius: var(--radius-md); background: var(--bg-subtle); border-left: 4px solid var(--primary-600);">
-        <strong style="color: var(--primary-600); display: inline-flex; align-items: center; gap: 0.35rem;">
-          ${getIcon('fileText')} សេចក្តីសង្ខេប៖
-        </strong>
-        <p style="margin-top: 0.35rem; color: var(--text-secondary);">${exam.description || 'វិញ្ញាសាស្តង់ដារសម្រាប់ការប្រឡងចូលក្របខ័ណ្ឌរដ្ឋ'}</p>
-      </div>
-
-      <div class="exam-markdown-content" style="white-space: pre-line; color: var(--text-primary);">
-        ${exam.content}
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-secondary" id="btn-close-modal-footer" style="color: var(--text-primary); border-color: var(--border-color);">
-        បិទផ្ទាំង
-      </button>
-      <button class="btn-primary" id="btn-start-quiz-from-exam" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-        ${getIcon('timer')} <span>ទៅធ្វើតេស្តសាកល្បង</span>
-      </button>
-    </div>
-  `;
-
-  modalContainer.classList.remove('hidden');
-
-  // Modal events
-  const closeModal = () => modalContainer.classList.add('hidden');
-  modalContent.querySelector('#btn-close-modal')?.addEventListener('click', closeModal);
-  modalContent.querySelector('#btn-close-modal-footer')?.addEventListener('click', closeModal);
-
-  // Zoom
-  const modalBody = modalContent.querySelector('#exam-modal-body');
-  modalContent.querySelector('#btn-zoom-in')?.addEventListener('click', () => {
-    if (fontSize < 24) {
-      fontSize += 2;
-      modalBody.style.fontSize = `${fontSize}px`;
-    }
-  });
-  modalContent.querySelector('#btn-zoom-out')?.addEventListener('click', () => {
-    if (fontSize > 12) {
-      fontSize -= 2;
-      modalBody.style.fontSize = `${fontSize}px`;
-    }
-  });
-
-  // Bookmark
-  const bmBtn = modalContent.querySelector('#btn-modal-bookmark');
-  bmBtn?.addEventListener('click', () => {
-    const state = StorageService.toggleBookmark(exam.id);
-    bmBtn.innerHTML = state ? getIcon('starFilled') : getIcon('star');
-    showToast(state ? 'បានរក្សាទុកវិញ្ញាសា!' : 'បានដកវិញ្ញាសាចេញពីបញ្ជីរក្សាទុក');
-  });
-
-  // Print
-  modalContent.querySelector('#btn-print-exam')?.addEventListener('click', () => {
-    window.print();
-  });
-
-  // Start quiz from this exam
-  modalContent.querySelector('#btn-start-quiz-from-exam')?.addEventListener('click', () => {
-    closeModal();
-    navigateTo('quiz');
-  });
+  if (!exam) return;
+  const examId = typeof exam === 'string' ? exam : exam.id;
+  navigateTo('exam-detail', { examId });
 }
 
 // Close modal when clicking outside content
@@ -291,6 +189,9 @@ function renderCurrentView() {
       break;
     case 'exams':
       renderExamLibraryView(viewContainer, tabParams, openExamModal);
+      break;
+    case 'exam-detail':
+      renderExamDetailView(viewContainer, tabParams.examId || tabParams.id, navigateTo, showToast);
       break;
     case 'quiz':
       renderQuizSimulatorView(viewContainer, navigateTo, showToast);

@@ -51,15 +51,16 @@ export function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quali
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Export as WebP if supported, fallback to JPEG
+        // Export as WebP if supported, fallback to PNG for transparent images or JPEG
         let dataUrl = '';
+        const isPng = file.type === 'image/png';
         try {
           dataUrl = canvas.toDataURL('image/webp', quality);
           if (!dataUrl.startsWith('data:image/webp')) {
-            dataUrl = canvas.toDataURL('image/jpeg', quality);
+            dataUrl = canvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', quality);
           }
         } catch {
-          dataUrl = canvas.toDataURL('image/jpeg', quality);
+          dataUrl = canvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', quality);
         }
 
         resolve(dataUrl);

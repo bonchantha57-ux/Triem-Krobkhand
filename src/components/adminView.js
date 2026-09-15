@@ -208,8 +208,10 @@ export function renderAdminView(container, showToast, refreshApp) {
           <tbody>
             ${exams.map(exam => `
               <tr>
-                <td style="width: 60px;">
-                  <img src="${exam.imageUrl || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=120&q=80'}" style="width: 48px; height: 36px; object-fit: cover; border-radius: var(--radius-sm);" alt="" />
+                <td style="width: 65px;">
+                  <div style="width: 52px; height: 42px; display: flex; align-items: center; justify-content: center; background: var(--bg-subtle); border-radius: var(--radius-sm); border: 1px solid var(--border-color); overflow: hidden; padding: 2px;">
+                    <img src="${exam.imageUrl || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=120&q=80'}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="" />
+                  </div>
                 </td>
                 <td style="font-weight: 600; max-width: 260px;">${exam.title}</td>
                 <td><span class="exam-badge">${exam.ministryName || exam.ministryId}</span></td>
@@ -236,6 +238,20 @@ export function renderAdminView(container, showToast, refreshApp) {
     const removeImgBtn = tabContainer.querySelector('#btn-remove-exam-img');
     const promptText = tabContainer.querySelector('#exam-upload-prompt');
     const urlInput = tabContainer.querySelector('#exam-img-url');
+
+    // Live URL Preview Handler
+    urlInput?.addEventListener('input', () => {
+      const val = urlInput.value.trim();
+      if (val) {
+        previewImg.src = val;
+        previewContainer.style.display = 'inline-block';
+        if (promptText) promptText.style.display = 'none';
+      } else if (!examImagePreview) {
+        previewImg.src = '';
+        previewContainer.style.display = 'none';
+        if (promptText) promptText.style.display = 'block';
+      }
+    });
 
     uploadBox?.addEventListener('click', (e) => {
       if (e.target !== removeImgBtn && !removeImgBtn.contains(e.target)) {
@@ -494,6 +510,20 @@ export function renderAdminView(container, showToast, refreshApp) {
     const qRemoveBtn = tabContainer.querySelector('#btn-remove-q-img');
     const qPrompt = tabContainer.querySelector('#q-upload-prompt');
     const qUrlInput = tabContainer.querySelector('#q-img-url');
+
+    // Live URL Preview Handler for Question Image
+    qUrlInput?.addEventListener('input', () => {
+      const val = qUrlInput.value.trim();
+      if (val) {
+        qPreviewImg.src = val;
+        qPreviewContainer.style.display = 'inline-block';
+        if (qPrompt) qPrompt.style.display = 'none';
+      } else if (!questionImagePreview) {
+        qPreviewImg.src = '';
+        qPreviewContainer.style.display = 'none';
+        if (qPrompt) qPrompt.style.display = 'block';
+      }
+    });
 
     qUploadBox?.addEventListener('click', (e) => {
       if (e.target !== qRemoveBtn && !qRemoveBtn.contains(e.target)) {

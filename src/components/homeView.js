@@ -156,8 +156,10 @@ export function renderHomeView(container, navigateTo, openExamModal) {
     ${exams.length > 0 ? `
       <div class="exams-grid">
         ${exams.slice(0, 3).map(exam => `
-          <div class="exam-card" data-id="${exam.id}">
-            <img class="exam-card-image" src="${exam.imageUrl || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80'}" alt="${exam.title}" loading="lazy" />
+          <div class="exam-card" data-id="${exam.id}" style="cursor: pointer;">
+            <div class="exam-card-image-wrap">
+              <img class="exam-card-image" src="${exam.imageUrl || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=600&q=80'}" alt="${exam.title}" loading="lazy" />
+            </div>
             <div class="exam-card-content">
               <div class="exam-meta-bar">
                 <span class="exam-badge">${exam.categoryName || 'វប្បធម៌ទូទៅ'}</span>
@@ -196,13 +198,20 @@ export function renderHomeView(container, navigateTo, openExamModal) {
     });
   });
 
-  // Read exam buttons
+  // Exam card clicks (Whole card or button navigates directly to Exam Detail page)
+  container.querySelectorAll('.exam-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const examId = card.dataset.id;
+      if (examId) navigateTo('exam-detail', { examId });
+    });
+  });
+
+  // Read exam buttons (Prevent bubbling to card)
   container.querySelectorAll('.btn-read-exam').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const examId = btn.dataset.id;
-      const exam = exams.find(x => x.id === examId);
-      if (exam) openExamModal(exam);
+      if (examId) navigateTo('exam-detail', { examId });
     });
   });
 

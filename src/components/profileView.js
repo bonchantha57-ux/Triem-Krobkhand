@@ -200,10 +200,15 @@ export function renderProfileView(container, showToast, openExamModal, navigateT
           ` : `
             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
               ${bookmarkedExams.map(ex => `
-                <div class="profile-item-row">
+                <div class="profile-item-row profile-exam-row" data-id="${ex.id}" style="cursor: pointer; display: flex; align-items: center;">
+                  ${ex.imageUrl ? `
+                    <div style="width: 44px; height: 38px; display: flex; align-items: center; justify-content: center; background: var(--bg-subtle); border-radius: var(--radius-sm); border: 1px solid var(--border-color); overflow: hidden; padding: 2px; flex-shrink: 0; margin-right: 0.65rem;">
+                      <img src="${ex.imageUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain;" alt="" />
+                    </div>
+                  ` : ''}
                   <div class="profile-item-info">
                     <h4 class="profile-item-title">${ex.title}</h4>
-                    <div class="profile-item-sub">${ex.ministryName} • ឆ្នាំ ${ex.year}</div>
+                    <div class="profile-item-sub">${ex.ministryName || 'ក្របខ័ណ្ឌរដ្ឋ'} • ឆ្នាំ ${ex.year || '2024'}</div>
                   </div>
                   <button class="btn-read-bookmarked btn-read-compact" data-id="${ex.id}">អាន</button>
                 </div>
@@ -304,8 +309,16 @@ export function renderProfileView(container, showToast, openExamModal, navigateT
     });
 
     // Read bookmarked exam
+    container.querySelectorAll('.profile-exam-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const ex = allExams.find(x => x.id === row.dataset.id);
+        if (ex) openExamModal(ex);
+      });
+    });
+
     container.querySelectorAll('.btn-read-bookmarked').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const ex = allExams.find(x => x.id === btn.dataset.id);
         if (ex) openExamModal(ex);
       });
