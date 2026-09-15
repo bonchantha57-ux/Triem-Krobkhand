@@ -1,0 +1,31 @@
+{
+  "name": "ត្រៀមក្របខ័ណ្ឌ - Triem Krobkhand",
+  "short_name": "ត្រៀមក្របខ័ណ្ឌ",
+  "description": "កម្មវិធីត្រៀមប្រឡងក្របខ័ណ្ឌរដ្ឋកម្ពុជា វិញ្ញាសា និងតេស្តរដ្ឋបាលសាធារណៈ",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "./logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
